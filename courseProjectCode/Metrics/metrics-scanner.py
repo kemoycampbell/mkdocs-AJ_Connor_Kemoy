@@ -15,7 +15,7 @@ Example Usage:
 """
 
 CODE_COVERAGE_DIRECTORY_DEPTH = 500
-SONARQUBE_API_URL="https://api.codecov.io/api/v2/github/mkdocs/repos/mkdocs/report/tree?depth="
+CODECOV_API_URL="https://api.codecov.io/api/v2/github/mkdocs/repos/mkdocs/report/tree?depth="
 
 def load_metrics_yaml():
     import yaml
@@ -30,7 +30,7 @@ def fetch_code_coverage_data(token:str, depth: int = CODE_COVERAGE_DIRECTORY_DEP
             "accept": "application/json",
             "authorization": f"Bearer {token}"
         }
-        response = requests.get(f"{SONARQUBE_API_URL}{depth}", headers=headers)
+        response = requests.get(f"{CODECOV_API_URL}{depth}", headers=headers)
         response.raise_for_status()
         return response.json()[0]
     except requests.RequestException as e:
@@ -116,7 +116,7 @@ class CodeMetrics:
     code_lines: int = 0
     comment_lines: int = 0
     blank_lines: int = 0
-    sonarqube_code_coverage_data: dict = None
+    codecov_code_coverage_data: dict = None
 
 
 def scan_python_file(file_path: Path) -> CodeMetrics:
@@ -250,7 +250,7 @@ def render_markdown_report(metrics: CodeMetrics, scanned_path: str, file_count: 
     md.append(f"- Comment density: **{comment_density:.3f}** ({comment_density*100:.1f}%)")
 
     #generate the code coverage markdown
-    coverage_md = generate_coverage_markdown(metrics.sonarqube_code_coverage_data)
+    coverage_md = generate_coverage_markdown(metrics.codecov_code_coverage_data)
     md.append(coverage_md)
     return "\n".join(md)
 
@@ -275,8 +275,8 @@ if __name__ == "__main__":
 
 
     metrics, file_count = scan_codebase(exclude_paths, path)
-    #append the codcoverage data to the metrics
-    metrics.sonarqube_code_coverage_data = fetch_code_coverage_data(token)
+    #append the codecov code coverage data to the metrics
+    metrics.codecov_code_coverage_data = fetch_code_coverage_data(token)
 
 
     # Write markdown report

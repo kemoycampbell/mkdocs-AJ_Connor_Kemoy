@@ -10,7 +10,7 @@ The script scans the source base and excludes the paths defined in the `metrics.
 - Blank lines
 
 ## Testability
-MkDocs uses SonarQube code coverage in its setup. We take advantage of this by leveraging the SonarQube API and parsing the coverage reports for each of the unit tests.
+MkDocs uses Codecov code coverage in its setup. We take advantage of this by leveraging the Codecov API and parsing the coverage reports for each of the unit tests.
 
 We are particularly interested in the percentage of coverage, total lines, total lines covered, and total line misses for each file. We display the results in a node and node-children format so that it is easy to understand.
 
@@ -34,7 +34,7 @@ pip install -r courseProjectCode/Metrics/requirements.txt
 cp courseProjectCode/Metrics/SAMPLE_metrics.yaml courseProjectCode/Metrics/metrics.yaml
 ```
 
-3. Generate a token for SonarQube by going to [SonarCloud](https://sonarcloud.io/login). Log in, then go to your account settings and generate a token key.
+3. Generate a token for Codecov by going to [Codecov](https://app.codecov.io/login). Log in, then go to your account settings and generate an API token key using the `Generate Token` button in the Access tab. If you get stuck, refer to these instructions [here](https://docs.codecov.com/reference/overview) provided by Codecov.
 
 4. Copy the token key into `metrics.yaml`.
 
