@@ -18,13 +18,26 @@ CODE_COVERAGE_DIRECTORY_DEPTH = 500
 CODECOV_API_URL="https://api.codecov.io/api/v2/github/mkdocs/repos/mkdocs/report/tree?depth="
 
 def load_metrics_yaml():
+    """Load the metrics.yaml file.
+
+    Returns:
+        Any: The contents of the metrics.yaml file.
+    """
     import yaml
-    #load the yaml from the root of the project
+    # Load the yaml from the root of the project
     with open("courseProjectCode/Metrics/metrics.yaml", 'r') as f:
         return yaml.safe_load(f)
 
-def fetch_code_coverage_data(token:str, depth: int = CODE_COVERAGE_DIRECTORY_DEPTH) -> dict:
-    
+def fetch_code_coverage_data(token: str, depth: int = CODE_COVERAGE_DIRECTORY_DEPTH) -> dict:
+    """Fetch code coverage data from Codecov API.
+
+    Args:
+        token (str): The Codecov API token.
+        depth (int, optional): The directory depth to fetch coverage data for. Defaults to CODE_COVERAGE_DIRECTORY_DEPTH.
+
+    Returns:
+        dict: The code coverage data.
+    """
     try:
         headers = {
             "accept": "application/json",
@@ -37,64 +50,89 @@ def fetch_code_coverage_data(token:str, depth: int = CODE_COVERAGE_DIRECTORY_DEP
         print(f"Error fetching code coverage data: {e}")
         return {}
 
-def coverage_get_node_stats(node:dict)-> Tuple[str,int, int, float]:
+def coverage_get_node_stats(node: dict) -> Tuple[str, int, int, float]:
+    """Get the coverage statistics for a node.
+
+    Args:
+        node (dict): The coverage node data.
+
+    Returns:
+        Tuple[str, int, int, float]: The coverage statistics for the node.
+    """
     if not node:
-        return '',0, 0, 0.0
-    
+        return '', 0, 0, 0.0
+
     name = node.get("name", "")
     total_lines = node.get("lines", 0)
     lines_test = node.get("hits", 0)
     misses = node.get("misses", 0)
     coverage = node.get("coverage", 0.0)
 
-    return name, total_lines, lines_test,misses, coverage 
+    return name, total_lines, lines_test, misses, coverage
 
-def coverage_nodes_helper_rec(node:dict, header_level:int=3) -> str:
+def coverage_nodes_helper_rec(node: dict, header_level: int = 3) -> str:
+    """Recursively generate markdown for coverage nodes.
+
+    Args:
+        node (dict): The coverage node data.
+        header_level (int, optional): The current header level for markdown. Defaults to 3.
+
+    Returns:
+        str: The generated markdown for the node and its children.
+    """
     if not node:
         return ""
     
     md = []
 
-    #node stats
+    # Node stats
     name, total_lines, lines_test, misses, coverage_percentage = coverage_get_node_stats(node)
-    #the header for the current node
+    # The header for the current node
     header = f"{'#' * header_level} {name}"
     md.append(header)
 
-    #the summary lines for the current node
+    # The summary lines for the current node
     md.append(f"- **Total Lines:** {total_lines} | **Coverage:** {coverage_percentage:.2f}% | **Lines test:** {lines_test} | **Misses:** {misses}\n")
 
-    #get the files and folders under this node "children"
+    # Get the files and folders under this node "children"
     files = []
     folders = []
     children = node.get("children", [])
     for child in children:
-        #is file?
+        # is file?
         if "children" not in child:
             files.append(child)
         else:
             folders.append(child)
     
-    #md of the files for this node
+    # md of the files for this node
     if files:
         md.append("\t **Files:**")
-        md.append("```python")#begin codeblock
+        md.append("```python")# begin codeblock
         for file in files:
             fname, ftotal_lines, fline_test, fmisses, fcoverage_percentage = coverage_get_node_stats(file)
             md.append(f"  - {fname} ({ftotal_lines} lines, {fcoverage_percentage:.2f}%, {fline_test} lines test, {fmisses} misses)")
-        md.append("```") #end codeblock
+        md.append("```") # end codeblock
         md.append("")
     
-    #recursively process the folders
+    # Recursively process the folders
     for folder in folders:
-        #we want to make the header level one deeper so that it shows hierarchy
+        # We want to make the header level one deeper so that it shows hierarchy
         folder_md = coverage_nodes_helper_rec(folder, header_level + 1)
         md.append(folder_md)
 
     return "\n".join(md)
 
-    #do this node have children?
-def generate_coverage_markdown(coverage_data: dict) ->str:
+    # Does this node have children?
+def generate_coverage_markdown(coverage_data: dict) -> str:
+    """Generate a markdown report from the coverage data.
+
+    Args:
+        coverage_data (dict): The code coverage data.
+
+    Returns:
+        str: The generated markdown report for the code coverage data.
+    """
     if not coverage_data:
         return "No coverage data available."
 
@@ -163,7 +201,7 @@ def scan_python_file(file_path: Path) -> CodeMetrics:
                     metrics.code_lines += 1
 
     except Exception as e:
-        # report I/O errors
+        # Report I/O errors
         print(f"Error reading {file_path}: {e}")
 
     return metrics
@@ -174,7 +212,7 @@ def find_python_files(root_dir: Path) -> Iterator[Path]:
     return root_dir.rglob("*.py")
 
 
-def scan_codebase(exclude_paths:list[str], mkdocs_path: str = ".") -> Tuple[CodeMetrics, int]:
+def scan_codebase(exclude_paths: list[str], mkdocs_path: str = ".") -> Tuple[CodeMetrics, int]:
     """Scan a codebase directory and aggregate metrics for all Python files."""
     root = Path(mkdocs_path)
     total_metrics = CodeMetrics()
@@ -249,7 +287,7 @@ def render_markdown_report(metrics: CodeMetrics, scanned_path: str, file_count: 
     md.append(f"- Blank: **{metrics.blank_lines}** ({blank_percentage:.1f}%)")
     md.append(f"- Comment density: **{comment_density:.3f}** ({comment_density*100:.1f}%)")
 
-    #generate the code coverage markdown
+    # Generate the code coverage markdown
     coverage_md = generate_coverage_markdown(metrics.codecov_code_coverage_data)
     md.append(coverage_md)
     return "\n".join(md)
@@ -268,14 +306,14 @@ if __name__ == "__main__":
         print(f"Error: Path '{path}' does not exist")
         sys.exit(1)
 
-    #load the metrics.yaml file
+    # Load the metrics.yaml file
     metrics_config = load_metrics_yaml()
     token = metrics_config.get("token", "")
     exclude_paths = metrics_config.get("exclude_paths", [])
 
 
     metrics, file_count = scan_codebase(exclude_paths, path)
-    #append the codecov code coverage data to the metrics
+    # Append the codecov code coverage data to the metrics
     metrics.codecov_code_coverage_data = fetch_code_coverage_data(token)
 
 
