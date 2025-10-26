@@ -18,7 +18,7 @@ This document reports on mutation testing performed on the MkDocs project using 
 
 **Baseline Run:**
 
-![Before Mutation Testing](images/mutation_testing/1-mutmut-before.png)
+![Before Mutation Testing](../images/mutation_testing/1-mutmut-before.png)
 
 ```bash
 Total Mutants: 3610
@@ -38,7 +38,7 @@ Speed: 20.03 mutations/second
 ### Mutmut Browser Analysis
 
 Mutmut browser revealed that most of the Surviving mutants were related to mkdocs.utils.get_relative_url()
-![Mutmut Browser Analysis](images/mutation_testing/2-mutmut-browse.png)
+![Mutmut Browser Analysis](../images/mutation_testing/2-mutmut-browse.png)
 
 Targeted testing that was added to improve these mutation testing results can be found in [`mutation-testing/test_utils_mutations.py`](../courseProjectCode/mutation-testing/test_utils_mutations.py)
 
@@ -46,7 +46,7 @@ Targeted testing that was added to improve these mutation testing results can be
 
 **After Adding Targeted Tests:**
 
-![After Mutation Testing](images/mutation_testing/3-mutmut-after.png)
+![After Mutation Testing](../images/mutation_testing/3-mutmut-after.png)
 
 ```bash
 Total Mutants: 3610
