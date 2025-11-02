@@ -2,34 +2,45 @@
 
 This document reports on static analysis testing performed on the MkDocs project using SonarQube.
 
-**Tool:** SonarQube Community Edition
+**Prerequisites**
+Before continuing, make sure Docker is installed and running on your machine.
 
-## 🔧 Workflow (Windows Bash)
+**Tools**
+- **SonarQube Community Edition** – Static code analysis platform  
+- **PostgreSQL** – Database backend for SonarQube  
+- **SonarScanner** – CLI tool to analyze your project’s source code  
+- **Docker** – Containerized environment for consistent setup  
 
-1.  **Run SonarQube through Docker**
+**System Configuration**
+This repository uses **Docker Compose** to:
+- Deploy SonarQube and PostgreSQL containers  
+- Automatically initialize SonarQube and generate an authentication token  
+- Append the token to the `.env` file for later use by the scanner  
 
-    ```bash
-    docker start sonarqube
-    ```
+## 🔧 Workflow
 
-2.  **Generate Security Token**
+1. **Setting up the .env file**
+```bash
+cp .env.example .env 
+```
 
-    ```text
-    Generate a User token at <http://localhost:9000/account/security>
-    ```
+2. **Configuring the permission**
+```bash
+sudo chown -R 1000:1000 .
+```
 
-    ![Token Generation](../images/static_analysis/token.png)
+3. **Run the docker compose to configure the tools**
+*quirk: If you are running this for the first time, you will need to run it twice as the first run generate the sonar token*
+```bash
+docker compose up -d
+```
 
-3.  **Execute SonarQube static analysis**
+4. **View SonarQube Results**
+```bash
+visit http://localhost:9888 in the browser
+login with your creds from .env
+```
 
-    ```bash
-    sonar-scanner \
-    -Dsonar.projectKey=mkdocs \
-    -Dsonar.sources=mkdocs \
-    -Dsonar.host.url=http://localhost:9000 \
-    -Dsonar.token=SONAR_TOKEN \
-    -Dsonar.python.version=3.10
-    ```
 
 ## 📊 Initial Scan Results
 
@@ -91,9 +102,42 @@ return fake_config.data
 ```
 
 **Verification:**
-Re-ran sonar-scanner to verify issue resolution. Blocker count reduced from 1 to 0.
+Re-ran sonar-scanner `docker compose run --rm sonarscanner` to verify issue resolution. Blocker count reduced from 1 to 0.
 
 ![Blocker Fixed](../images/static_analysis/blocker-fixed.png)
+
+
+### Fix 1 - Deployment Abort Error Message Duplications: `Refactor the deployment abort error to a constant`
+![Deployment Error Duplication](../images/static_analysis/kemoy-issue-selection.png)
+
+**Issue Details:**
+
+- **Type:** Maintainability
+- **Rule:** String literals should not be duplicated (python:S1192)
+- **File:** `mkdocs/commands/gh_deploy.py`
+
+**Problem:**
+When a deployment fails in various functions in `gh_deploy.py`, it should return an error message notifying the user that the deployment failed. However, the same error was hardcoded in three different functions. This can lead to issues when testing, as the developer cannot guarantee the consistency of the error or avoid possible typos, thus causing test cases to fail.
+
+The fix is straightforward: move the error message to a constant and raise the constant instead of using a string literal.
+
+**Root Cause:**
+Three different methods throw an exception when they cannot perform deployment for various reasons. The culprit was `raise Abort(Deployment Aborted!)`.
+
+**Fix Applied:**
+
+```python
+# Before
+raise Abort(`Deployment Aborted!`)
+
+# After
+raise Abort(ABORT_DEPLOYMENT_MESSAGE)
+```
+
+**Verification:**
+Re-ran the scanner `docker compose run --rm sonarscanner` to verify the fix.
+
+![Deployment Error Duplication](../images/static_analysis/deployment_duplication_fix.png)
 
 ## Team Contributions
 
@@ -101,4 +145,4 @@ Re-ran sonar-scanner to verify issue resolution. Blocker count reduced from 1 to
 --------|------------------|--------
  AJ Barea | SonarQube setup via Docker, identified and fixed BLOCKER maintainability issue in config_options.py, created documentation with workflow and screenshots | Fixed blocker: run_validation now returns validated data (reduced MkDocs blockers from 1 to 0). Previous experience with SonarQube saved me hours!
  Connor | - | -
- Kemoy | - | -
+ Kemoy |Move SonarQube and other tools setup to docker-compose.yaml, setup sonar-project.properties file,write bash script to automate generate tokens, fix string literal duplication issue spotted by sonarqube, update the documentation - | Fixed string literal issue, automate the static analysis sytem

@@ -77,3 +77,6 @@ courseProjectCode/Metrics/metrics.yaml
 mutants/
 
 .DS_Store
+
+#do not include .env
+.env
