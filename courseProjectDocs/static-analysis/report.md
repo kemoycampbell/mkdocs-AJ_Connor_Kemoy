@@ -139,10 +139,39 @@ Re-ran the scanner `docker compose run --rm sonarscanner` to verify the fix.
 
 ![Deployment Error Duplication](../images/static_analysis/deployment_duplication_fix.png)
 
+### Fix 3 - Maintainability `Replace this constructor call with a literal`
+
+![Constructor Call Issue](../images/static_analysis/connor-issue-selection.png)
+
+**Issue Details:**
+- **Type:** Maintainability
+- **Rule:** Literal syntax should be preferred when creating empty collections or dictionaries with keyword arguments (python:S7498)
+- **File:** `mkdocs/__main__.py`
+
+**Problem:**
+In Python, using literal syntax, like `{}` for dictionaries, is generally preferred over using constructor calls like `dict()`. The literal syntax is more concise and readable while also making the code more consistent with Python best practices. Using constructors can be less efficient and less clear which is important for maintainability and fuction of the software.
+
+**Root Cause:**
+In `__main__.py`, there was a line that created a dictionary using the `dict()` constructor. This is less pythonic than using the literal syntax `{}` for initializing dictionaries.
+
+**Fix Applied:**
+
+```python
+# Before
+@click.group(context_settings=dict(help_option_names=['-h', '--help'], max_content_width=120))
+# After
+@click.group(context_settings={'help_option_names': ['-h', '--help'], 'max_content_width': 120})
+```
+
+**Verification:**
+Reran the scanner `docker compose run --rm sonarscanner` to verify the fix.
+
+![Constructor Call Fix](../images/static_analysis/constructor-call-fix.png)
+
 ## Team Contributions
 
  Member | Task/Contribution | Notes  
 --------|------------------|--------
  AJ Barea | SonarQube setup via Docker, identified and fixed BLOCKER maintainability issue in config_options.py, created documentation with workflow and screenshots | Fixed blocker: run_validation now returns validated data (reduced MkDocs blockers from 1 to 0). Previous experience with SonarQube saved me hours!
- Connor | - | -
+ Connor | Fixed constructor call issue in `mkdocs/__main__.py` | Improved code maintainability by replacing dict() with {} literal syntax.
  Kemoy |Move SonarQube and other tools setup to docker-compose.yaml, setup sonar-project.properties file,write bash script to automate generate tokens, fix string literal duplication issue spotted by sonarqube, update the documentation - | Fixed string literal issue, automate the static analysis sytem
