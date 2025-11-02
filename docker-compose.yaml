@@ -1,0 +1,90 @@
+services:
+  sonarqube-mkdocs:
+    image: sonarqube:community
+    container_name: sonarqube_mkdocs
+    ports:
+      - 9888:9000
+    environment:
+      SONAR_ES_BOOTSTRAP_CHECKS_DISABLE: "true"
+      SONAR_JDBC_URL: jdbc:postgresql://mkdoc_db:5432/${POSTGRES_DB}
+      SONAR_JDBC_USERNAME: ${POSTGRES_USER}
+      SONAR_JDBC_PASSWORD: ${POSTGRES_PASSWORD}
+
+    
+    volumes:
+    - sonarqube_data:/opt/sonarqube/data
+    - sonarqube_extensions:/opt/sonarqube/extensions
+    - sonarqube_logs:/opt/sonarqube/logs
+    
+    healthcheck:
+      test: >
+        sh -c '
+          curl -s -u "${SONAR_DEFAULT_USER}:${SONAR_DEFAULT_PASS}" -f http://localhost:9000/api/system/health ||
+          curl -s -u "${SONAR_TOKEN}:" -f http://localhost:9000/api/system/health || exit 1
+        '
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    depends_on:
+      mkdoc_db:
+        condition: service_healthy
+
+  mkdoc_db:
+    image: postgres:15
+    container_name: mkdoc_db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - sonarqube_db:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  init:
+    image: curlimages/curl:latest
+    container_name: sonarqube_init_mkdocs
+    user: root
+    depends_on:
+      sonarqube-mkdocs:
+        condition: service_healthy
+    volumes:
+      - ./sonar_config.sh:/workspace/init-sonarqube.sh:rw
+      - ./.env:/workspace/.env:rw
+    working_dir: /workspace
+    entrypoint: ["/bin/sh", "-c"]
+    command: "./init-sonarqube.sh"
+  
+  sonarscanner:
+    image: sonarsource/sonar-scanner-cli:latest
+    container_name: sonarscanner_mkdocs
+    depends_on:
+      init:
+        condition: service_completed_successfully
+    environment:
+      SONAR_HOST_URL: ${SONAR_HOST}
+      SONAR_TOKEN: ${SONAR_TOKEN}
+    volumes:
+      - ./sonar-project.properties:/usr/src/sonar-project.properties:rw
+      - ./mkdocs:/usr/src/mkdocs:rw
+    working_dir: /usr/src
+    
+
+
+
+  
+volumes:
+  sonarqube_data:
+  sonarqube_extensions:
+  sonarqube_logs:
+  sonarqube_db:
+  
+
+    
+
+
+    
+

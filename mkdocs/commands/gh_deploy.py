@@ -18,6 +18,7 @@ if TYPE_CHECKING:
 log = logging.getLogger(__name__)
 
 default_message = """Deployed {sha} with MkDocs version: {version}"""
+ABORT_DEPLOYMENT_MESSAGE = 'Deployment Aborted!'
 
 
 def _is_cwd_git_repo() -> bool:
@@ -29,7 +30,7 @@ def _is_cwd_git_repo() -> bool:
         )
     except FileNotFoundError:
         log.error("Could not find git - is it installed and on your path?")
-        raise Abort('Deployment Aborted!')
+        raise Abort(ABORT_DEPLOYMENT_MESSAGE)
     proc.communicate()
     return proc.wait() == 0
 
@@ -94,7 +95,7 @@ def _check_version(branch: str) -> None:
             f'you are attempting to deploy with an older version ({currentv}). Use --ignore-version '
             'to deploy anyway.'
         )
-        raise Abort('Deployment Aborted!')
+        raise Abort(ABORT_DEPLOYMENT_MESSAGE)
 
 
 def gh_deploy(
@@ -139,7 +140,7 @@ def gh_deploy(
         )
     except ghp_import.GhpError as e:
         log.error(f"Failed to deploy to GitHub with error: \n{e.message}")
-        raise Abort('Deployment Aborted!')
+        raise Abort(ABORT_DEPLOYMENT_MESSAGE)
 
     cname_file = os.path.join(config.site_dir, 'CNAME')
     # Does this repository have a CNAME set for GitHub Pages?
