@@ -107,7 +107,7 @@ Re-ran sonar-scanner `docker compose run --rm sonarscanner` to verify issue reso
 ![Blocker Fixed](../images/static_analysis/blocker-fixed.png)
 
 
-### Fix 1 - Deployment Abort Error Message Duplications: `Refactor the deployment abort error to a constant`
+### Fix 2 - Deployment Abort Error Message Duplications: `Refactor the deployment abort error to a constant`
 ![Deployment Error Duplication](../images/static_analysis/kemoy-issue-selection.png)
 
 **Issue Details:**
@@ -168,10 +168,12 @@ Reran the scanner `docker compose run --rm sonarscanner` to verify the fix.
 
 ![Constructor Call Fix](../images/static_analysis/constructor-call-fix.png)
 
+### Fix 4 - 
+
 ## Team Contributions
 
  Member | Task/Contribution | Notes  
 --------|------------------|--------
  AJ Barea | SonarQube setup via Docker, identified and fixed BLOCKER maintainability issue in config_options.py, created documentation with workflow and screenshots | Fixed blocker: run_validation now returns validated data (reduced MkDocs blockers from 1 to 0). Previous experience with SonarQube saved me hours!
- Connor | Fixed constructor call issue in `mkdocs/__main__.py` | Improved code maintainability by replacing dict() with {} literal syntax.
+ Connor | Fixed constructor call issue in `mkdocs/__main__.py`, reread documentation and corrected errors | Improved code maintainability by replacing dict() with {} literal syntax. Fixed numbering issue in fix summary.
  Kemoy |Move SonarQube and other tools setup to docker-compose.yaml, setup sonar-project.properties file,write bash script to automate generate tokens, fix string literal duplication issue spotted by sonarqube, update the documentation - | Fixed string literal issue, automate the static analysis sytem
