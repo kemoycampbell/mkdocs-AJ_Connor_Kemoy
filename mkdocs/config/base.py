@@ -361,9 +361,8 @@ def load_config(
         # Initialize the config with the default schema.
         from mkdocs.config.defaults import MkDocsConfig
 
-        if config_file_path is None:
-            if sys.stdin and fd is not sys.stdin.buffer:
-                config_file_path = getattr(fd, 'name', None)
+        if config_file_path is None and sys.stdin and fd is not sys.stdin.buffer:
+            config_file_path = getattr(fd, 'name', None)
         cfg = MkDocsConfig(config_file_path=config_file_path)
         # load the config file
         cfg.load_file(fd)

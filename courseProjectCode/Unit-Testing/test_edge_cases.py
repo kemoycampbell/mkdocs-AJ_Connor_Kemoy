@@ -13,7 +13,8 @@ class EdgeCaseTests(unittest.TestCase):
     """Test edge cases and error conditions with low coverage."""
 
     def test_config_option_mutable_default_copy(self):
-        """Test BaseConfigOption default property with mutable values.
+        """
+        Test BaseConfigOption default property with mutable values.
 
         Ensures mutable defaults are properly copied to prevent
         shared state between config instances.
@@ -32,7 +33,8 @@ class EdgeCaseTests(unittest.TestCase):
         self.assertNotEqual(default1, default2)
 
     def test_config_option_immutable_default(self):
-        """Test BaseConfigOption default property with immutable values.
+        """
+        Test BaseConfigOption default property with immutable values.
 
         When default value doesn't have copy() method (immutable types).
         """
@@ -48,7 +50,8 @@ class EdgeCaseTests(unittest.TestCase):
         self.assertEqual(default2, 'immutable_string')
 
     def test_build_datetime_with_source_date_epoch(self):
-        """Test get_build_datetime with SOURCE_DATE_EPOCH environment variable.
+        """
+        Test get_build_datetime with SOURCE_DATE_EPOCH environment variable.
 
         Reproducible builds using SOURCE_DATE_EPOCH for timestamp.
         """
@@ -61,7 +64,8 @@ class EdgeCaseTests(unittest.TestCase):
             self.assertEqual(result.tzinfo, timezone.utc)
 
     def test_build_datetime_without_source_date_epoch(self):
-        """Test get_build_datetime without SOURCE_DATE_EPOCH.
+        """
+        Test get_build_datetime without SOURCE_DATE_EPOCH.
 
         Normal build without reproducible build environment.
         """
@@ -78,7 +82,8 @@ class EdgeCaseTests(unittest.TestCase):
                 self.assertEqual(result, mock_now)
 
     def test_build_timestamp_with_empty_pages(self):
-        """Test get_build_timestamp with empty pages list.
+        """
+        Test get_build_timestamp with empty pages list.
 
         When no pages are provided, should fall back to build datetime.
         """
@@ -94,12 +99,11 @@ class EdgeCaseTests(unittest.TestCase):
             self.assertEqual(result, expected_timestamp)
 
     def test_config_option_set_on_non_config_object(self):
-        """Test BaseConfigOption.__set__ with invalid parent object.
+        """
+        Test BaseConfigOption.__set__ with invalid parent object.
 
         Attempting to set config option on non-Config object should raise AttributeError.
         """
-        from mkdocs.config.base import Config
-
         option = BaseConfigOption()
         option._name = 'test_option'
 
