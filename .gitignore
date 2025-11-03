@@ -46,6 +46,7 @@ nosetests.xml
 coverage.xml
 *,cover
 .hypothesis/
+.scannerwork/
 
 # Translations
 *.mo
@@ -76,3 +77,6 @@ courseProjectCode/Metrics/metrics.yaml
 mutants/
 
 .DS_Store
+
+#do not include .env
+.env

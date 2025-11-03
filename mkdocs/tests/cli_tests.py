@@ -5,8 +5,8 @@ import logging
 import unittest
 from unittest import mock
 
-from click.testing import CliRunner
 import pytest
+from click.testing import CliRunner
 
 from mkdocs import __main__ as cli
 

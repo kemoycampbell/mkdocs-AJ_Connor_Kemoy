@@ -21,19 +21,21 @@ SONARQUBE_API_URL = "https://api.codecov.io/api/v2/github/mkdocs/repos/mkdocs/re
 
 
 def load_metrics_yaml() -> dict:
-    """Load configuration from metrics.yaml file.
+    """
+    Load configuration from metrics.yaml file.
 
     Returns:
         dict: Configuration containing API token and exclude paths.
     """
     import yaml
 
-    with open("courseProjectCode/Metrics/metrics.yaml", 'r') as f:
+    with open("courseProjectCode/Metrics/metrics.yaml") as f:
         return yaml.safe_load(f)
 
 
 def fetch_code_coverage_data(token: str, depth: int = CODE_COVERAGE_DIRECTORY_DEPTH) -> dict:
-    """Fetch code coverage data from external API.
+    """
+    Fetch code coverage data from external API.
 
     Args:
         token: API authentication token.
@@ -42,7 +44,6 @@ def fetch_code_coverage_data(token: str, depth: int = CODE_COVERAGE_DIRECTORY_DE
     Returns:
         dict: Coverage data structure or empty dict if fetch fails.
     """
-
     try:
         headers = {"accept": "application/json", "authorization": f"Bearer {token}"}
         response = requests.get(f"{SONARQUBE_API_URL}{depth}", headers=headers)
@@ -54,7 +55,8 @@ def fetch_code_coverage_data(token: str, depth: int = CODE_COVERAGE_DIRECTORY_DE
 
 
 def coverage_get_node_stats(node: dict) -> Tuple[str, int, int, int, float]:
-    """Extract statistics from a coverage node.
+    """
+    Extract statistics from a coverage node.
 
     Args:
         node: Coverage node dictionary from API response.
@@ -75,7 +77,8 @@ def coverage_get_node_stats(node: dict) -> Tuple[str, int, int, int, float]:
 
 
 def coverage_nodes_helper_rec(node: dict, header_level: int = 3) -> str:
-    """Recursively generate markdown for coverage nodes.
+    """
+    Recursively generate markdown for coverage nodes.
 
     Processes coverage data hierarchically, creating markdown sections for
     directories and files with their respective coverage statistics.
@@ -138,7 +141,8 @@ def coverage_nodes_helper_rec(node: dict, header_level: int = 3) -> str:
 
 
 def generate_coverage_markdown(coverage_data: Optional[dict]) -> str:
-    """Generate complete markdown section for code coverage report.
+    """
+    Generate complete markdown section for code coverage report.
 
     Args:
         coverage_data: Root coverage data from API.
@@ -168,7 +172,8 @@ class CodeMetrics:
 
 
 def scan_python_file(file_path: Path) -> CodeMetrics:
-    """Analyze a single Python file for line metrics.
+    """
+    Analyze a single Python file for line metrics.
 
     Counts total lines, code lines, comment lines (including docstrings),
     and blank lines while handling multiline strings correctly.
@@ -184,7 +189,7 @@ def scan_python_file(file_path: Path) -> CodeMetrics:
     multiline_delimiter = None
 
     try:
-        with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+        with open(file_path, encoding='utf-8', errors='ignore') as f:
             for line in f:
                 metrics.total_lines += 1
                 stripped = line.strip()
@@ -228,7 +233,8 @@ def scan_python_file(file_path: Path) -> CodeMetrics:
 
 
 def find_python_files(root_dir: Path) -> Iterator[Path]:
-    """Recursively discover all Python files in directory tree.
+    """
+    Recursively discover all Python files in directory tree.
 
     Args:
         root_dir: Root directory to search from.
@@ -240,7 +246,8 @@ def find_python_files(root_dir: Path) -> Iterator[Path]:
 
 
 def scan_codebase(exclude_paths: list[str], mkdocs_path: str = ".") -> Tuple[CodeMetrics, int]:
-    """Scan entire codebase and aggregate metrics from all Python files.
+    """
+    Scan entire codebase and aggregate metrics from all Python files.
 
     Recursively analyzes all Python files in the given path, excluding
     specified directories, and aggregates line count statistics.
@@ -275,7 +282,8 @@ def scan_codebase(exclude_paths: list[str], mkdocs_path: str = ".") -> Tuple[Cod
 
 
 def render_markdown_report(metrics: CodeMetrics, scanned_path: str, file_count: int) -> str:
-    """Generate comprehensive Markdown report from collected metrics.
+    """
+    Generate comprehensive Markdown report from collected metrics.
 
     Creates a detailed report including line statistics, ratios, comment density,
     and integrated code coverage data.
@@ -341,7 +349,8 @@ def render_markdown_report(metrics: CodeMetrics, scanned_path: str, file_count: 
 
 
 def write_markdown_report(output_path: Path, content: str) -> None:
-    """Write markdown content to file, creating directories as needed.
+    """
+    Write markdown content to file, creating directories as needed.
 
     Args:
         output_path: Target file path for the report.

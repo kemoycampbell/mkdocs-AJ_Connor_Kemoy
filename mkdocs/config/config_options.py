@@ -295,7 +295,7 @@ class DictOfItems(Generic[T], BaseConfigOption[Dict[str, T]]):
         for key in fake_config:
             self.option_type.post_validation(fake_config, key)
 
-        return value
+        return fake_config.data
 
 
 class ConfigItems(ListOfItems[LegacyConfig]):
