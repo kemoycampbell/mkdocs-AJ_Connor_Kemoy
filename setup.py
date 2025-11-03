@@ -1,5 +1,7 @@
-"""Installation using setup.py is no longer supported.
-Use `python -m pip install .` instead."""
+"""
+Installation using setup.py is no longer supported.
+Use `python -m pip install .` instead.
+"""
 
 import sys
 

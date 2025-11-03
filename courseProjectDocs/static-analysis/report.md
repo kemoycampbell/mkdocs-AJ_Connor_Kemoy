@@ -168,12 +168,42 @@ Reran the scanner `docker compose run --rm sonarscanner` to verify the fix.
 
 ![Constructor Call Fix](../images/static_analysis/constructor-call-fix.png)
 
-### Fix 4 - 
+### Fix 4 - Maintainability `Merge this if statement with the enclosing one.`
+
+![If Statement Merge Issue](../images/static_analysis/connor-issue-selection-2.png)
+
+**Issue Details:**
+- **Type:** Maintainability
+- **Rule:** Mergeable "if" statements should be combined (python:S1066)
+- **File:** `mkdocs/config/base.py`
+
+**Problem:**
+In the `load_config()` method of `base.py`, there were nested `if` statements that could be merged into a single statement. Merging these statements improves readability and reduces unnecessary indentation, making the code cleaner and easier to understand.
+
+**Root Cause:**
+The nested `if` statements check if `config_file_path` is `None` and then check if `sys.stdin` is available and if `fd` is not `sys.stdin.buffer`. These checks can be combined into a single condition.
+
+**Fix Applied:**
+
+```python
+# Before
+if config_file_path is None:
+    if sys.stdin and fd is not sys.stdin.buffer:
+        # Rest of the code
+# After
+if config_file_path is None and sys.stdin and fd is not sys.stdin.buffer:
+    # Rest of the code
+```
+
+**Verification:**
+Reran the scanner `docker compose run --rm sonarscanner` to verify the fix.
+
+![If Statement Merge Fix](../images/static_analysis/if-statement-merge-fix.png)
 
 ## Team Contributions
 
  Member | Task/Contribution | Notes  
 --------|------------------|--------
  AJ Barea | SonarQube setup via Docker, identified and fixed BLOCKER maintainability issue in config_options.py, created documentation with workflow and screenshots | Fixed blocker: run_validation now returns validated data (reduced MkDocs blockers from 1 to 0). Previous experience with SonarQube saved me hours!
- Connor | Fixed constructor call issue in `mkdocs/__main__.py`, reread documentation and corrected errors | Improved code maintainability by replacing dict() with {} literal syntax. Fixed numbering issue in fix summary.
+ Connor | Fixed constructor call issue in `mkdocs/__main__.py`, fixed nested if statement in `mkdocs/config/base.py`, reread documentation and corrected errors, ran auto-formatting for code to make sure it was inline with rules set by mkdocs developers | Improved code maintainability by replacing dict() with {} literal syntax and merging if statements. Fixed numbering issue in fix summary. Used `hatch fmt` and other `style` commands defined by mkdocs developers for code formatting.
  Kemoy |Move SonarQube and other tools setup to docker-compose.yaml, setup sonar-project.properties file,write bash script to automate generate tokens, fix string literal duplication issue spotted by sonarqube, update the documentation - | Fixed string literal issue, automate the static analysis sytem
