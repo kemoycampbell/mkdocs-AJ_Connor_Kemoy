@@ -40,7 +40,6 @@ class FakeEntryPoint:
 class TestBuildTemplateWithPlugin:
     @mock.patch(
         'mkdocs.plugins.entry_points',
-        # 'importlib.metadata.entry_points',
         mock.Mock(
             return_value=[
                 FakeEntryPoint('sample', FakePlugin),
@@ -193,7 +192,6 @@ class TestBuildTemplate:
             config=config,
             nav=nav
         )
-        print(generated_html)
 
         #assert that we have what we expected
         assert f"<h1>Welcome to {SITE_NAME}</h1>" in generated_html

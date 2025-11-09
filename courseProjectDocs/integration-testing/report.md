@@ -4,11 +4,11 @@ This document highlighted some of the integration tests that were performed on t
 ## Integration Test 1
 ### 1. Test Design Summary
 **Modules tested**
-- `build_template` function from `mkdocs.commands.build`
+- `_build_template` function from `mkdocs.commands.build`
 - `get_files` function from `mkdocs.structure.files`
 - `get_navigation` function from `mkdocs.structure.nav`
 - `load_config` function from `mkdocs.config`
-- `MKDocConfig` class from `mkdocs.config`
+- `MKDocsConfig` class from `mkdocs.config`
 - `Files` class from `mkdocs.structure.files`
 - `Navigation` class from `mkdocs.structure.nav`
 
@@ -38,12 +38,52 @@ The test execute succesfully and all interactions went well.
 **Sample output**
 ![integration 1 ouptut](../images/integrations/integration1.png)
 
+## Integration Test 2
+### 1. Test Design Summary
+**Modules tested**
+- `_build_template` function from `mkdocs.commands.build`
+- `get_files` function from `mkdocs.structure.files`
+- `get_navigation` function from `mkdocs.structure.nav`
+- `load_config` function from `mkdocs.config`
+- `MkDocsConfig` class from `mkdocs.config`
+- `Plugins` class from `mkdocs.config.config_options`
+- `Files` class from `mkdocs.structure.files`
+- `Navigation` class from `mkdocs.structure.nav`
 
+**Relevant snippet of code from mkdocs that lead to the integration testings**
+```python
+def _build_template(
+    name: str, template: jinja2.Template, files: Files, config: MkDocsConfig, nav: Navigation
+) -> str:
+
+    # Some other code for _build_template...
+
+    output = config.plugins.on_post_template(output, template_name=name, config=config) # this line was targeted for testing plugin integration in build template process
+
+    return output
+```
+
+### 2. Test Data Preparation
+- Create a dummy plugin that modifies the output of a rendered template in the `on_post_template` event
+- Mock the entrypoints method from `importlib.metadata` that plugins calls to include our dummy plugin
+- Utilize the tmp_path pytest fixture to create a mkdocs project structure with `/docs`
+- Create a simple config file using the same fixture with a sitename, site url, nav, and a single plugin with two options
+- load the config with `load_config`
+- Create a Jinja2 template content with site name and navigations
+- Create the `Navigation` and `Files` using `get_navigation` and `get_files`
+- Pass the necessary arguments to `_build_template` and store the result in a variable
+
+### 3. Execution Results
+- The test was run using pytest with the `tmp_path` fixture to create a throwaway directory for the sample project and config file
+- The results were compare using asserts to ensure that what we generated in the test preparation shows up and that the dummy plugin modified the output as expected.
+
+**Observations:**
+The dummy plugin successfully modified the output of the rendered template as expected, indicating that the plugin system which is loaded when a config object is created integrated well with config and the template rendering process. There were some initial troubles with how this test interacted with our first integration test due to both tests relying on the entrypoints method; however, this was resolved by ensuring that each test had the necessary data available to them.
 
 ## Team Contributions
 
  Member | Task/Contribution | Notes  
 --------|------------------|-------- 
  AJ Barea |  |
- Connor |  | 
+ Connor | Wrote Integration test 2 and updated the report | Tested the behavior described by integration test #2 and documented my findings and execution setup. Resolved an issue caused by test #2 mocking entrypoints that affected test #1.
  Kemoy | Wrote Integration test 1, write report documentation | Test the integration behavior for integration test #1, documents findings and execution setup
