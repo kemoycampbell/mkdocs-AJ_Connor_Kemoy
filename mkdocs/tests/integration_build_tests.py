@@ -1,16 +1,12 @@
-import tempfile
 import textwrap
 from pathlib import Path
 from unittest import mock
 import jinja2
-from datetime import datetime
 
 from mkdocs.config import config_options as c
 from mkdocs.config import load_config
 from mkdocs.config.base import Config
 from mkdocs.plugins import BasePlugin
-from mkdocs.structure.files import Files
-from mkdocs.structure.nav import Navigation
 from mkdocs.commands.build import _build_template
 from mkdocs.structure.files import get_files
 from mkdocs.structure.nav import get_navigation
@@ -105,7 +101,6 @@ class TestBuildTemplateWithPlugin:
         </html>
         """)
 
-        # empty files and navigations as we dont want to test those since I am already testing config and template rendering
         files = get_files(config)
         nav = get_navigation(files, config)
 
@@ -180,7 +175,6 @@ class TestBuildTemplate:
         </html>
         """)
 
-        #empty files and navigations as we dont want to test those since I am already testing config and template rendering
         files = get_files(config)
         nav = get_navigation(files, config)
 
@@ -200,3 +194,44 @@ class TestBuildTemplate:
         #ensure all nav items are present
         for item in NAVIGATIONS:
             assert f"<li>{item['title']}</li>" in generated_html
+
+
+def test_missing_nav_files(tmp_path):
+    """Test integration behavior when navigation references non-existent files"""
+
+    #create mkdocs project structure with docs directory
+    docs_dir = tmp_path / "docs"
+    docs_dir.mkdir()
+
+    #only create index.md, but nav will reference other files
+    (docs_dir / "index.md").write_text("# Home Page")
+
+    #create config that references files that don't exist
+    config_file = tmp_path / "mkdocs.yml"
+    config_file.write_text(textwrap.dedent("""
+        site_name: Test Site
+        site_url: http://localhost:8080
+        nav:
+        - Home: index.md
+        - About: about.md
+        - Contact: contact.md
+    """))
+
+    #load config - should succeed even with missing files referenced
+    config = load_config(config_file=str(config_file))
+
+    #get_files should only find index.md
+    files = get_files(config)
+
+    #verify only one file was found
+    file_list = list(files)
+    assert len(file_list) == 1
+    assert file_list[0].src_path == "index.md"
+
+    #get_navigation should handle missing files gracefully
+    nav = get_navigation(files, config)
+
+    #verify navigation was created but only contains existing pages
+    assert nav is not None
+    assert len(nav.pages) == 1
+    assert nav.pages[0].title == "Home"
