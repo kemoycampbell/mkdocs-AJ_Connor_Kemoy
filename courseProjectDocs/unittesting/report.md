@@ -23,18 +23,21 @@ The initial test analysis shows that configuration coverage is only 14% from the
 - Error conditions in YAML processing
 - Environment variable handling for reproducible builds
 
-**Finding the gaps using python coverage**
+#### Finding the gaps using python coverage
+
 ```bash
 python -m coverage run --source=mkdocs -m unittest mkdocs.tests.config.config_tests
 python -m coverage report --show-missing
 ```
 
 ## New Test Cases  
+
 **Rationales & Areas of Focus**  
 The following test cases are designed to close the aforementioned [coverage gaps](#initial-coverage-assessment).  
 The tests validate configuration option handling and build reproducibility to ensure robustness and correctness in edge cases that could otherwise lead to silent failures or inconsistent behavior.  
 
 We target the following functionalities:  
+
 - Mutable vs. Immutable Defaults  
 - Reproducible Defaults – validate `SOURCE_DATE_EPOCH` environment variable for deterministic builds  
 - Error Handling in Config Option Assignment – raise clear errors when misused
@@ -114,6 +117,7 @@ def test_config_option_set_on_non_config_object(self):
 **Edge Case**: Attempting to use config options on non-Config objects should raise clear AttributeError with helpful message.
 
 ### Running the new test
+
 ```bash
 python -m unittest courseProjectCode.Unit-Testing.test_edge_cases -v
 ```
@@ -146,6 +150,7 @@ Added 6 unit tests targeting edge cases in:
 These tests provide branch coverage for previously untested code paths, focusing on error handling and boundary conditions that improve software robustness.
 
 ## Compare New Test vs Additional Tests
+
 After the new test cases were added, we obtained a total of 731 tests compared to the previously reported [725](../Setup/report.md#expected-test-count).  
 ![731 tests](../images/tests/731_test.png)
 
@@ -153,14 +158,15 @@ In addition, the previous baseline reported total code coverage as [90.31%](../S
 ![95% coverage](../images/tests/95_percent_coverage.png)
 
 ## Running the new tests
+
 ### unit tests
+
 ```bash
 hatch run test:test
 ```
 
 ### Coverage report
+
 ```bash
 python -m coverage run --source=mkdocs -m unittest discover -s mkdocs/tests -p "*_tests.py" && python -m coverage html
 ```
-
-
