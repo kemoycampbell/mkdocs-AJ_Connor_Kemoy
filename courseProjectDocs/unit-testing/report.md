@@ -151,10 +151,10 @@ These tests provide branch coverage for previously untested code paths, focusing
 
 ## Compare New Test vs Additional Tests
 
-After the new test cases were added, we obtained a total of 731 tests compared to the previously reported [725](../Setup/report.md#expected-test-count).  
+After the new test cases were added, we obtained a total of 731 tests compared to the previously reported [725](../setup/report.md#expected-test-count).  
 ![731 tests](../images/tests/731_test.png)
 
-In addition, the previous baseline reported total code coverage as [90.31%](../Setup/report.md#overall-coverage). We now achieve 95% coverage.  
+In addition, the previous baseline reported total code coverage as [90.31%](../setup/report.md#overall-coverage). We now achieve 95% coverage.  
 ![95% coverage](../images/tests/95_percent_coverage.png)
 
 ## Running the new tests

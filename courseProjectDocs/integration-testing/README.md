@@ -6,7 +6,7 @@ This documentation contain the overview of how to run the integration tests
 
 ## Prerequisites
 
-- Follow the setup instructions in `CourseProjectDocs/Setup`.
+- Follow the setup instructions in `courseProjectDocs/setup`.
 - Ensure that all dependencies are installed as described in the setup
 
 ## Running Integration Test 1
