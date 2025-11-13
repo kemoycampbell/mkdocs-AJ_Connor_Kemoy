@@ -1,0 +1,9 @@
+services:
+  mkdocs_system_test:
+    build: .
+    container_name: mkdocs_system_test
+    volumes:
+      - ./tests:/app/tests
+    ports:
+      - "8000:8000"
+

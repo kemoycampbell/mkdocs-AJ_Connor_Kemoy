@@ -6,35 +6,48 @@ This documentation contains instructions for running the system tests for MkDocs
 
 ## Prerequisites
 
-- Follow the setup instructions in `courseProjectDocs/setup`.
-- Ensure that all dependencies are installed as described in the setup
-- MkDocs must be installed and available on PATH
-- Python virtual environment must be activated
+- Clone the project from `https://github.com/kemoycampbell/mkdocs-AJ_Connor_Kemoy`
+- Download and install docker for your system from `https://www.docker.com/products/docker-desktop/`
 
-## Running Tests
-
-To run the new project creation system test:
-
+## Test Locations
+The black box tests are located in
 ```bash
-pytest courseProjectCode/system-testing/system_tests.py::test_mkdocs_new_creates_project -v
+courseProjectCode/system-testing/tests
 ```
 
-## Running All System Tests
-
-To run all system tests at once:
-
+## How to run the tests
+### Change directory into the correct directory
 ```bash
-pytest courseProjectCode/system-testing/system_tests.py -v
+cd courseProjectCode/system-testing/
 ```
+
+### Build the docker environment
+```bash
+docker-compose build --no-cache
+```
+
+### Running all tests
+```bash
+docker-compose run --rm mkdocs_system_test tests/
+```
+
+### Running a specific test file
+```bash
+docker-compose run --rm mkdocs_system_test tests/<name of the test file>
+eg. 
+docker-compose run --rm mkdocs_system_test tests/test_mkdocs_cli_new.py
+```
+
 
 ## Expected Results
 
 - All tests should pass
-- Tests execute quickly (< 3 seconds total)
+- Tests execute quickly
 - Each test creates temporary directories that are automatically cleaned up
 
 ## Notes
 
 - System tests use black-box testing
 - Tests invoke MkDocs via subprocess (CLI interface)
+- Tests involves HTTP calls using python requests
 - No internal MkDocs modules are imported
