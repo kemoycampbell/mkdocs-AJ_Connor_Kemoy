@@ -49,4 +49,5 @@ docker-compose run --rm mkdocs_system_test tests/test_mkdocs_cli_new.py
 
 - System tests use black-box testing
 - Tests invoke MkDocs via subprocess (CLI interface)
+- Tests involves HTTP calls using python requests
 - No internal MkDocs modules are imported
