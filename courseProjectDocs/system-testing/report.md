@@ -4,10 +4,36 @@
 
 This document highlights the system tests performed on MkDocs. System tests validate end-to-end workflows through black-box testing of the CLI interface, ensuring that user-facing functionality meets the specified functional requirements.
 
-**Test Approach:** Black-box testing using `subprocess` (no internal MkDocs modules imported)  
+We utilize docker system to create a container which installed mkdocs and provides an isolate environment
+for testing. 
+
+**Test Approach:** Black-box testing using `subprocess` and requests (no internal MkDocs modules imported)  
 **Test Framework:** pytest
+**Test Environment**: Docker - Create a container with mkdocs installed in the container
 
 ---
+
+## How to run the tests
+### Change directory into the correct directory
+```bash
+cd courseProjectCode/system-testing
+```
+
+### Build the docker environment
+```bash
+docker compose build --no-cache
+```
+
+### Running all tests
+```bash
+docker compose run --rm mkdocs_system_test tests/
+```
+
+### Running a specific test file
+```bash
+docker compose run --rm mkdocs_system_test tests/<name of the test file>
+```
+
 
 ## New Project Creation Workflow
 
