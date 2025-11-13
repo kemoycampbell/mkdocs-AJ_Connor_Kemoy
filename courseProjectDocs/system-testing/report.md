@@ -18,7 +18,7 @@ for testing.
 
 **Test Type:** Black-box system test  
 **Test File:** `courseProjectCode/system-testing/test_mkdocs_cli_new.py`
-**Execute The Test**:`docker compose run --rm mkdocs_system_test tests/test_mkdocs_cli_new.py`
+**Execute The Test**:`docker-compose run --rm mkdocs_system_test tests/test_mkdocs_cli_new.py`
 
 **Modules Tested:**
 
@@ -56,7 +56,7 @@ assert os.path.isfile('docs/index.md')
 
 ```bash
 # Test execution command
-docker compose run --rm mkdocs_system_test tests/test_mkdocs_cli_new.py
+docker-compose run --rm mkdocs_system_test tests/test_mkdocs_cli_new.py
 ```
 
 ![System Test Output](../images/system/system_test_1_output.png)
@@ -82,7 +82,7 @@ This black-box test validates the complete end-to-end workflow of the new projec
 
 **Test Type:** Black-box system test  
 **Test File:** `courseProjectCode/system-testing/test_mkdocs_cli_serve.py`
-**Execute The Test**:`docker compose run --rm mkdocs_system_test tests/test_mkdocs_cli_serve.py`
+**Execute The Test**:`docker-compose run --rm mkdocs_system_test tests/test_mkdocs_cli_serve.py`
 
 **Modules Tested:**
 
@@ -126,23 +126,22 @@ assert "Welcome to MkDocs" in response.text, "Homepage content does not contain 
 
 ```bash
 # Test execution command
-docker compose run --rm mkdocs_system_test tests/test_mkdocs_cli_serve.py
+docker-compose run --rm mkdocs_system_test tests/test_mkdocs_cli_serve.py
 ```
 
-![System Test Output](../images/system/system_test_1_output.png)
+![System Test Output](../images/system/system_test_2_output.png)
 
 **Observations:**
 
-The `mkdocs new` command created a complete project structure through the CLI interface. The test verifies:
+The `mkdocs new` command created a complete project structure through the CLI interface.
+The `mkdocs serve -a 0.0.0.0:8000` start a web server and serves the contents default contents that were generated using `mkdocs new`. The tests verifies:
 
-- Command executes without errors (exit code 0)
-- Project directory is created with the correct name
-- Configuration file (`mkdocs.yml`) is generated with default `site_name: My Docs`
-- Documentation directory (`docs/`) is created
-- Default homepage (`docs/index.md`) is created including its welcome content and command reference
-- All files contain expected default content
+- The server successfully start
+- The `index.html` responses with `200` status
+- The `index.html` contains `Welcome to MkDocs` in its html content
 
-This black-box test validates the complete end-to-end workflow of the new project creation workflow without accessing internal implementation details.
+
+This black-box test validates the complete end-to-end workflow of the serve workflow without accessing internal implementation details.
 ---
 
 ## Team Contributions
@@ -151,7 +150,7 @@ This black-box test validates the complete end-to-end workflow of the new projec
 --------|------------------|----------------------
  AJ Barea | System testing infrastructure setup, created test file structure, implemented new project creation workflow system test using a black-box subprocess approach, created docs | New Project Creation Workflow
  Connor | - | -
- Kemoy | - | -
+ Kemoy | Configure Dockerfile and compose.yaml so that the tests can be run in a container with mkdocs installed on the system, write the black box test for the interaction with `mkdocs serve` cli, update the documentation | Dockerize the mkdocs installation and black box testing environment, follow along documentations
 
 ---
 
