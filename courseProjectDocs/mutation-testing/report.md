@@ -8,7 +8,7 @@ This document reports on mutation testing performed on the MkDocs project using 
 **Tool:** mutmut v3.3.1  
 **Test Framework:** pytest + unittest
 
-> **Setup Instructions:** For detailed setup and execution instructions, see [`mutation-testing/README.md`](../courseProjectCode/mutation-testing/README.md)
+> **Setup Instructions:** For detailed setup and execution instructions, see [`mutation-testing/README.md`](../../courseProjectCode/mutation-testing/README.md)
 
 ---
 
@@ -40,7 +40,7 @@ Speed: 20.03 mutations/second
 Mutmut browser revealed that most of the Surviving mutants were related to mkdocs.utils.get_relative_url()
 ![Mutmut Browser Analysis](../images/mutation_testing/2-mutmut-browse.png)
 
-Targeted testing that was added to improve these mutation testing results can be found in [`mutation-testing/test_utils_mutations.py`](../courseProjectCode/mutation-testing/test_utils_mutations.py)
+Targeted testing that was added to improve these mutation testing results can be found in [`mutation-testing/test_utils_mutations.py`](../../courseProjectCode/mutation-testing/test_utils_mutations.py)
 
 ### After: Improved Test Suite
 
@@ -71,7 +71,9 @@ Speed: 22.76 mutations/second
  Test Count | ~5 | ~9 | +4 tests
 
 ### Comments
+
 - The mutation score and survivor count worsened slightly due to some weirdness with the way mutmut was counting mutants. Even though we killed more mutants, mutmut believed that some mutants that it previously thought were untested were now being tested, thus increasing the total number of tested mutants and survivors. After investigation, it is unclear why mumut is exhibiting this behavior as none of the new tests target or call anything in the particular file where this change occurred.
+
 ---
 
 ## Lessons Learned
@@ -98,7 +100,7 @@ Speed: 22.76 mutations/second
       - Adding 4 simple tests improved mutation score by 16.7%
       - Should focus on killing survivors rather than achieving 100% coverage moving forward
 
-5. **Tool Limitations**
+5.  **Tool Limitations**
 
       - mutmut has issues with generics and abstract classes, and it requires a fully functional test suite and completely correct code to run.
       - mkdocs uses unittest framework, while mutmut relies on pytest; This lead to some incompatibilities.
@@ -109,17 +111,17 @@ Speed: 22.76 mutations/second
 ## Team Contributions
 
  Member | Task/Contribution | Notes  
---------|------------------|-------- 
+--------|------------------|--------
  AJ Barea | Mutation testing setup, pyproject.toml configuration, test implementation, and documentation | Killed 6 mutants  
  Connor | Increased the number of tests that mutmut would run, wrote tests to kill 2 mutants, got mutmut running with hatch, and updated documentation | Ran into a weird issue with mutmut counting mutants differently after adding tests. Not sure why this happened. Researched but couldn't find a cause or solution.
-| Kemoy | configured the `pyproject.toml` to target individual tests as not all can run under mutmut due to compatibilities<br>added `mutmut_pytest.ini` to override the pytest configuration and troubleshoot compatibility-breaking tests<br>communicated with team members and documented findings regarding mutmut behaviors and issues<br>wrote `test_utils_get_build_time_mutations.py` to kill surviving mutant tests<br>fixed `mkdocs/tests/edge_case_tests.py` breaking/failing test caused by mutmut modifying `os.environ` but not resetting it<br>discovered Generic/ABC issues with mutmut | Improved mutmut compatibility, documented configuration issues, created mutation tests to kill surviving mutants, resolved environment-related test failures, and identified framework-level compatibility problems |
+ Kemoy | Configured the `pyproject.toml` to target individual tests as not all can run under mutmut due to compatibilities<br>added `mutmut_pytest.ini` to override the pytest configuration and troubleshoot compatibility-breaking tests<br>communicated with team members and documented findings regarding mutmut behaviors and issues<br>wrote `test_utils_get_build_time_mutations.py` to kill surviving mutant tests<br>fixed `mkdocs/tests/edge_case_tests.py` breaking/failing test caused by mutmut modifying `os.environ` but not resetting it<br>discovered Generic/ABC issues with mutmut | Improved mutmut compatibility, documented configuration issues, created mutation tests to kill surviving mutants, resolved environment-related test failures, and identified framework-level compatibility problems
 
 ---
 
 ## References
 
 - **Target Source File:** `mkdocs/utils/__init__.py`
-- **Setup Guide:** [`courseProjectCode/mutation-testing/README.md`](../courseProjectCode/mutation-testing/README.md)
+- **Setup Guide:** [`courseProjectCode/mutation-testing/README.md`](../../courseProjectCode/mutation-testing/README.md)
 - **Mutmut GitHub:** <https://github.com/boxed/mutmut/>
 - **Mutmut Documentation:** <https://mutmut.readthedocs.io/>
 - **What is Mutation Testing?** <https://en.wikipedia.org/wiki/Mutation_testing> <https://kodare.net/2016/12/01/mutmut-a-python-mutation-testing-system.html>

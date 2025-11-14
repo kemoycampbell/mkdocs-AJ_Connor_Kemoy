@@ -95,7 +95,7 @@ python -m coverage report
 - **Coverage Improvement**: +4.69%
 - **Additional Tests**: 6 new edge case tests
 
-![Coverage Report 95%](image.png)
+![Coverage Report 95%](../images/unit-testing/image.png)
 
 To generate an HTML coverage report:
 
@@ -154,7 +154,7 @@ Ran 9 tests in 0.123s
 OK
 ```
 
-![Mocking Tests Output](image2.png)
+![Mocking Tests Output](../images/unit-testing/image2.png)
 
 ### Coverage Improvements from Mocking Tests
 
