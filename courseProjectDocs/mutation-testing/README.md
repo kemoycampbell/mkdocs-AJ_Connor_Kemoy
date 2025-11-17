@@ -5,7 +5,8 @@
 **Configuration:** Defined in `pyproject.toml` under [tool.mutmut]  
 
 ## Workflow
-It is recommended to run mutmut using hatch. This ensures that the correct virtual environment with all dependencies is used. Note that mutmut will not install if you do not have rust installed as well. Refer to the mutmut documentation if there are any issues installing. If you are using Windows, it is recommended to use WSL (Windows Subsystem for Linux) as mutmut requires Unix fork support. You can follow the steps [below](#workflow-windows-wsl) before running mutmut.
+
+It is recommended to run mutmut using hatch. This ensures that the correct virtual environment with all dependencies is used. Note that mutmut will not install if you do not have rust installed as well. Refer to the mutmut documentation if there are any issues installing. If you are using Windows, it is recommended to use WSL (Windows Subsystem for Linux) as mutmut requires Unix fork support. You can follow the steps [below](#-workflow-windows-wsl) before running mutmut.
 The command to run mutmut via hatch is:
 
 ```bash
