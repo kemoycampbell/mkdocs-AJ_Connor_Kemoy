@@ -92,37 +92,22 @@ env = jinja2.Environment(loader=loader, auto_reload=False)
 env = jinja2.Environment(loader=loader, autoescape=True, auto_reload=False)
 ```
 
-### Vulnerability 2 - Regular Expression Denial of Service (ReDoS) in Version Parsing
+### Vulnerability 2 - Missing Resource Integrity Checks
+- **File:** `mkdocs/themes/mkdocs/base.html`
+- **Line:** 27,28,37,39,47
+- **Type:**  Others
+- **Severity:** Low
 
-![Denial of Service Vulnerability](../images/security-testing/denialofservice.png)
+**About the vulnerablity**
 
-- **File:** `mkdocs/commands/gh_deploy.py`
-- **Line:** 81
-- **Type:** Denial of Service (DoS) - Regular Expression Denial of Service (ReDoS)
-- **Severity:** Medium
+Lines 27, 28, 37, 39, and 47 load JavaScript resources from third-party CDNs (Cloudflare and Google). Because these external scripts are included  without Subresource Integrity(SRI) checks, they expose the site to potential third-party supply-chain attacks.
+If an attacker were to compromise the CDN or tamper with the hosted JavaScript files referenced in `mkdocs/themes/mkdocs/base.html`, every MkDocs-generated site using these resources could silently load malicious code.
 
-**Recommended Fix:**
+Lack of SRI is listed on CWE as a weakness: [CWE-353](https://cwe.mitre.org/data/definitions/353.html) In additional, in 2021 OWASP places this in their top 10 and under a new category group "Software and Data Integrity Failures": [A08:2021 – Software and Data Integrity Failures(https://owasp.org/Top10/A08_2021-Software_and_Data_Integrity_Failures/
 
-The regex pattern contains nested quantifiers `\d+(\.\d+)+` which can cause backtracking when processing malicious input. For example, a string like "1.1.1.1.1.1.1.1.1.1.1!" (many version-like segments without a final match) could cause the regex engine to try exponentially many match combinations, leading to significant CPU consumption and potential denial of service.
 
-To fix this we could, either:
-1. Simplify the regex to avoid nested quantifiers
-2. Use a non-backtracking approach like manual parsing
-3. Add input length limits before regex matching
 
-```python
-# Original Code
-m = re.search(r'\d+(\.\d+)+((a|b|rc)\d+)?(\.post\d+)?(\.dev\d+)?', msg, re.X | re.I)
-
-# Possible Fix - A more specific pattern that doesn't backtrack as much
-m = re.search(r'\d+(?:\.\d+){1,3}(?:(?:a|b|rc)\d+)?(?:\.post\d+)?(?:\.dev\d+)?', msg, re.X | re.I)
-```
-
-### Vulnerability 3 - 
-- **File:** 
-- **Line:** 
-- **Type:** 
-- **Severity:** 
+![lack of SRI check](../images/security-testing/third_party_supply_chain.png)
 
 **Recommended Fix:**
 
@@ -135,10 +120,43 @@ Recommended fix details go here.
 
 ```
 
+### Vulnerability 3 - Regular Expression Denial of Service (ReDoS) in Version Parsing
+
+![Denial of Service Vulnerability](../images/security-testing/denialofservice.png)
+
+- **File:** `mkdocs/commands/gh_deploy.py`
+- **Line:** 82
+- **Type:** Denial of Service (DoS) - Regular Expression Denial of Service (ReDoS)
+- **Severity:** Medium
+
+**Recommended Fix:**
+
+The regex pattern contains nested quantifiers `\d+(\.\d+)+` which can cause catastrophic backtracking when processing malicious input. For example, a string like "1.1.1.1.1.1.1.1.1.1.1!" (many version-like segments without a final match) could cause the regex engine to try exponentially many match combinations, leading to significant CPU consumption and potential denial of service.
+
+To fix this, either:
+1. Simplify the regex to avoid nested quantifiers
+2. Use a non-backtracking approach (e.g., manual parsing)
+3. Add input length limits before regex matching
+
+```python
+# Original Code (Line 82)
+m = re.search(r'\d+(\.\d+)+((a|b|rc)\d+)?(\.post\d+)?(\.dev\d+)?', msg, re.X | re.I)
+
+# Recommended Fix - Option 1: Simplified regex with possessive quantifier alternative
+# Use a more specific pattern that doesn't backtrack as much
+m = re.search(r'\d+(?:\.\d+){1,3}(?:(?:a|b|rc)\d+)?(?:\.post\d+)?(?:\.dev\d+)?', msg, re.X | re.I)
+
+# Recommended Fix - Option 2: Add input length validation
+if len(msg) < 1000:  # Reasonable limit for version string
+    m = re.search(r'\d+(\.\d+)+((a|b|rc)\d+)?(\.post\d+)?(\.dev\d+)?', msg, re.X | re.I)
+else:
+    m = None
+```
+
 ## Team Contributions
 
- Member | Task/Contribution | Notes  
+ Member | Task/Contribution | Notes
 --------|------------------|--------
- AJ Barea | Identified and documented ReDoS vulnerability. | The Regex used is vulnerable to polynomial runtime due to backtracking. SonarQube made this an easy process again.
+ AJ Barea | Identified and documented ReDoS vulnerability in version parsing (gh_deploy.py:82) | Regular Expression Denial of Service vulnerability due to nested quantifiers causing catastrophic backtracking.
  Connor | Created initial version of report, README, and added one potential vulnerability. | Was able to reuse SonarQube setup from static analysis report. Another suggested tool would be HCL CodeSweep Extension for VS Code for local scanning of code. It identifies some other potential security issues, but has some overlap with SonarQube.
- Kemoy | | 
+ Kemoy | Identified and documented Missing Resource Integrity Checks vulnerability (base.html) | CDN scripts loaded without SRI checks expose sites to supply-chain attacks. 
