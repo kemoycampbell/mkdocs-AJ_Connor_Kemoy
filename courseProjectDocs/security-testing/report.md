@@ -92,11 +92,22 @@ env = jinja2.Environment(loader=loader, auto_reload=False)
 env = jinja2.Environment(loader=loader, autoescape=True, auto_reload=False)
 ```
 
-### Vulnerability 2 - 
-- **File:** 
-- **Line:** 
-- **Type:** 
-- **Severity:** 
+### Vulnerability 2 - Missing Resource Integrity Checks
+- **File:** `mkdocs/themes/mkdocs/base.html`
+- **Line:** 27,28,37,39,47
+- **Type:**  Others
+- **Severity:** Low
+
+**About the vulnerablity**
+
+Lines 27, 28, 37, 39, and 47 load JavaScript resources from third-party CDNs (Cloudflare and Google). Because these external scripts are included  without Subresource Integrity(SRI) checks, they expose the site to potential third-party supply-chain attacks.
+If an attacker were to compromise the CDN or tamper with the hosted JavaScript files referenced in `mkdocs/themes/mkdocs/base.html`, every MkDocs-generated site using these resources could silently load malicious code.
+
+Lack of SRI is listed on CWE as a weakness: [CWE-353](https://cwe.mitre.org/data/definitions/353.html) In additional, in 2021 OWASP places this in their top 10 and under a new category group "Software and Data Integrity Failures": [A08:2021 – Software and Data Integrity Failures(https://owasp.org/Top10/A08_2021-Software_and_Data_Integrity_Failures/
+
+
+
+![lack of SRI check](../images/security-testing/third_party_supply_chain.png)
 
 **Recommended Fix:**
 
