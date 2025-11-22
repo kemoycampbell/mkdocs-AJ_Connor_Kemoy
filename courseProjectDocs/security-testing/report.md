@@ -111,36 +111,55 @@ Lack of SRI is listed on CWE as a weakness: [CWE-353](https://cwe.mitre.org/data
 
 **Recommended Fix:**
 
-Recommended fix details go here.
+Add Subresource Integrity (SRI) attributes to all external script tags. Generate integrity hashes using tools like [SRI Hash Generator](https://www.srihash.org/) and add both `integrity` and `crossorigin` attributes to CDN-loaded scripts.
 
-```python
-# Original Code
+```html
+<!-- Original Code -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
 
-# Recommended Fix
-
+<!-- Recommended Fix -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"
+        integrity="sha384-[hash-value-here]"
+        crossorigin="anonymous"></script>
 ```
 
-### Vulnerability 3 - 
-- **File:** 
-- **Line:** 
-- **Type:** 
-- **Severity:** 
+### Vulnerability 3 - Regular Expression Denial of Service (ReDoS) in Version Parsing
+
+![Denial of Service Vulnerability](../images/security-testing/denialofservice.png)
+
+- **File:** `mkdocs/commands/gh_deploy.py`
+- **Line:** 81
+- **Type:** Denial of Service (DoS) - Regular Expression Denial of Service (ReDoS)
+- **Severity:** Medium
 
 **Recommended Fix:**
 
-Recommended fix details go here.
+The regex pattern contains nested quantifiers `\d+(\.\d+)+` which can cause catastrophic backtracking when processing malicious input. For example, a string like "1.1.1.1.1.1.1.1.1.1.1!" (many version-like segments without a final match) could cause the regex engine to try exponentially many match combinations, leading to significant CPU consumption and potential denial of service.
+
+To fix this, either:
+1. Simplify the regex to avoid nested quantifiers
+2. Use a non-backtracking approach (e.g., manual parsing)
+3. Add input length limits before regex matching
 
 ```python
 # Original Code
+m = re.search(r'\d+(\.\d+)+((a|b|rc)\d+)?(\.post\d+)?(\.dev\d+)?', msg, re.X | re.I)
 
-# Recommended Fix
+# Recommended Fix - Option 1: Simplified regex with possessive quantifier alternative
+# Use a more specific pattern that doesn't backtrack as much
+m = re.search(r'\d+(?:\.\d+){1,3}(?:(?:a|b|rc)\d+)?(?:\.post\d+)?(?:\.dev\d+)?', msg, re.X | re.I)
 
+# Recommended Fix - Option 2: Add input length validation
+if len(msg) < 1000:  # Reasonable limit for version string
+    m = re.search(r'\d+(\.\d+)+((a|b|rc)\d+)?(\.post\d+)?(\.dev\d+)?', msg, re.X | re.I)
+else:
+    m = None
 ```
 
 ## Team Contributions
 
- Member | Task/Contribution | Notes  
+ Member | Task/Contribution | Notes
 --------|------------------|--------
- AJ Barea | | 
+ AJ Barea | Identified and documented ReDoS vulnerability in version parsing (gh_deploy.py:82) | Regular Expression Denial of Service vulnerability due to nested quantifiers causing catastrophic backtracking.
  Connor | Created initial version of report, README, and added one potential vulnerability. | Was able to reuse SonarQube setup from static analysis report. Another suggested tool would be HCL CodeSweep Extension for VS Code for local scanning of code. It identifies some other potential security issues, but has some overlap with SonarQube.
- Kemoy | | 
+ Kemoy | Identified and documented Missing Resource Integrity Checks vulnerability (base.html) | CDN scripts loaded without SRI checks expose sites to supply-chain attacks. 
