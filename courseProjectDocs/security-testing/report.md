@@ -92,21 +92,30 @@ env = jinja2.Environment(loader=loader, auto_reload=False)
 env = jinja2.Environment(loader=loader, autoescape=True, auto_reload=False)
 ```
 
-### Vulnerability 2 - 
-- **File:** 
-- **Line:** 
-- **Type:** 
-- **Severity:** 
+### Vulnerability 2 - Regular Expression Denial of Service (ReDoS) in Version Parsing
+
+![Denial of Service Vulnerability](../images/security-testing/denialofservice.png)
+
+- **File:** `mkdocs/commands/gh_deploy.py`
+- **Line:** 81
+- **Type:** Denial of Service (DoS) - Regular Expression Denial of Service (ReDoS)
+- **Severity:** Medium
 
 **Recommended Fix:**
 
-Recommended fix details go here.
+The regex pattern contains nested quantifiers `\d+(\.\d+)+` which can cause backtracking when processing malicious input. For example, a string like "1.1.1.1.1.1.1.1.1.1.1!" (many version-like segments without a final match) could cause the regex engine to try exponentially many match combinations, leading to significant CPU consumption and potential denial of service.
+
+To fix this we could, either:
+1. Simplify the regex to avoid nested quantifiers
+2. Use a non-backtracking approach like manual parsing
+3. Add input length limits before regex matching
 
 ```python
 # Original Code
+m = re.search(r'\d+(\.\d+)+((a|b|rc)\d+)?(\.post\d+)?(\.dev\d+)?', msg, re.X | re.I)
 
-# Recommended Fix
-
+# Possible Fix - A more specific pattern that doesn't backtrack as much
+m = re.search(r'\d+(?:\.\d+){1,3}(?:(?:a|b|rc)\d+)?(?:\.post\d+)?(?:\.dev\d+)?', msg, re.X | re.I)
 ```
 
 ### Vulnerability 3 - 
@@ -130,6 +139,6 @@ Recommended fix details go here.
 
  Member | Task/Contribution | Notes  
 --------|------------------|--------
- AJ Barea | | 
+ AJ Barea | Identified and documented ReDoS vulnerability. | The Regex used is vulnerable to polynomial runtime due to backtracking. SonarQube made this an easy process again.
  Connor | Created initial version of report, README, and added one potential vulnerability. | Was able to reuse SonarQube setup from static analysis report. Another suggested tool would be HCL CodeSweep Extension for VS Code for local scanning of code. It identifies some other potential security issues, but has some overlap with SonarQube.
  Kemoy | | 
