@@ -111,13 +111,16 @@ Lack of SRI is listed on CWE as a weakness: [CWE-353](https://cwe.mitre.org/data
 
 **Recommended Fix:**
 
-Recommended fix details go here.
+Add Subresource Integrity (SRI) attributes to all external script tags. Generate integrity hashes using tools like [SRI Hash Generator](https://www.srihash.org/) and add both `integrity` and `crossorigin` attributes to CDN-loaded scripts.
 
-```python
-# Original Code
+```html
+<!-- Original Code -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
 
-# Recommended Fix
-
+<!-- Recommended Fix -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"
+        integrity="sha384-[hash-value-here]"
+        crossorigin="anonymous"></script>
 ```
 
 ### Vulnerability 3 - Regular Expression Denial of Service (ReDoS) in Version Parsing
@@ -125,7 +128,7 @@ Recommended fix details go here.
 ![Denial of Service Vulnerability](../images/security-testing/denialofservice.png)
 
 - **File:** `mkdocs/commands/gh_deploy.py`
-- **Line:** 82
+- **Line:** 81
 - **Type:** Denial of Service (DoS) - Regular Expression Denial of Service (ReDoS)
 - **Severity:** Medium
 
@@ -139,7 +142,7 @@ To fix this, either:
 3. Add input length limits before regex matching
 
 ```python
-# Original Code (Line 82)
+# Original Code
 m = re.search(r'\d+(\.\d+)+((a|b|rc)\d+)?(\.post\d+)?(\.dev\d+)?', msg, re.X | re.I)
 
 # Recommended Fix - Option 1: Simplified regex with possessive quantifier alternative
