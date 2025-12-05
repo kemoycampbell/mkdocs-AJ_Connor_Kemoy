@@ -7,7 +7,7 @@ services:
   
   locust:
     image: locustio/locust:latest
-    container_name: locust_stress
+    container_name: locust_skipe
     working_dir: /mnt/locust
     ports:
       - "8089:8089"
@@ -15,13 +15,11 @@ services:
       - ../tests/:/mnt/locust/
 
     command: >
-      -f stress_test.py
+      -f spike_test.py
       --host=http://mkdocs:8000 
-      -u 2000 
-      -r 200
-      --run-time 5m
+      --run-time 3m
       --headless
-      --html stress_test_report.html
+      --html spike_test_report.html
 
 
       

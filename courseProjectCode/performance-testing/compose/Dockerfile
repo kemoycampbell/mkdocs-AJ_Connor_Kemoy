@@ -9,13 +9,13 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Install mkdocs and pytest
-RUN pip install --no-cache-dir mkdocs pytest requests beautifulsoup4
+RUN pip install --no-cache-dir mkdocs mkdocs-material markdown-include
 RUN git clone https://github.com/Nethereum/Nethereum.Docs.git /app/Nethereum.Docs
 RUN mv Nethereum.Docs/* .
 RUN rm -rf Nethereum.Docs
 
 #edit the mkdocs.yml to to add dev_addr: '0.0.0.0:8000' at the end of the file
-RUN echo "\ndev_addr: '0.0.0.0:8000'" >> mkdocs.yml
+#RUN echo "\ndev_addr: '0.0.0.0:8000'" >> mkdocs.yml
 
 EXPOSE 8000
 
