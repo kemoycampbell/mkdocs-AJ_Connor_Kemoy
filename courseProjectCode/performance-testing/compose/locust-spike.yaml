@@ -1,0 +1,27 @@
+services:
+  mkdocs:
+    build: .
+    container_name: mkdocs
+    ports:
+      - "8000:8000"
+  
+  locust:
+    image: locustio/locust:latest
+    container_name: locust_skipe
+    working_dir: /mnt/locust
+    ports:
+      - "8089:8089"
+    volumes:
+      - ../tests/:/mnt/locust/
+
+    command: >
+      -f spike_test.py
+      --host=http://mkdocs:8000 
+      --run-time 3m
+      --headless
+      --html spike_test_report.html
+
+
+      
+
+    

@@ -1,0 +1,29 @@
+services:
+  mkdocs:
+    build: .
+    container_name: mkdocs
+    ports:
+      - "8000:8000"
+  
+  locust:
+    image: locustio/locust:latest
+    container_name: locust_stress
+    working_dir: /mnt/locust
+    ports:
+      - "8089:8089"
+    volumes:
+      - ../tests/:/mnt/locust/
+
+    command: >
+      -f stress_test.py
+      --host=http://mkdocs:8000 
+      -u 2000 
+      -r 200
+      --run-time 5m
+      --headless
+      --html stress_test_report.html
+
+
+      
+
+    
