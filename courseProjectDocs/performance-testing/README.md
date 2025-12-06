@@ -11,9 +11,12 @@ The tests are organized into the following structure within the project:
 ```courseProjectCode/
 └── performance-testing/
     ├── compose/
+    │   ├── locust-seq-load.yaml
+    │   ├── locust-all-load.yaml
     │   ├── locust-stress.yaml
     │   └── locust-spike.yaml
     └── tests/
+        ├── load_test.py
         ├── stress_test.py
         └── spike_test.py
 ```
@@ -21,6 +24,40 @@ The tests are organized into the following structure within the project:
 The `compose` directory contains Docker Compose files for setting up the testing environment, while the `tests` directory contains the Locust test scripts.
 
 When executing the tests, the Docker Compose files will set up the necessary services, including the MkDocs server and the Locust generator in headless mode and store the results in HTML format under the `/tests/` directory.
+
+## Load Test Commands
+
+### Change into the project root directory
+```bash
+cd mkdocs-AJ_Connor_Kemoy
+```
+
+### Run Tests
+```bash
+# Sequential Page Loads
+docker-compose -f courseProjectCode/performance-testing/compose/locust-seq-load.yaml up --build -d
+
+# All Pages Loaded at Once
+docker-compose -f courseProjectCode/performance-testing/compose/locust-all-load.yaml up --build -d
+```
+
+### Accessing the Results
+After the test completes, you will find two HTML reports in `courseProjectCode/performance-testing/tests/`. Open these files in a web browser to view the detailed results of the load tests:
+- Sequential Load Test: `seq_load_test.html`
+- All Pages Loaded at Once: `all_load_test.html`
+
+### Tearing down the test environment
+To stop and remove the test environments, run the following command:
+```bash
+docker-compose -f courseProjectCode/performance-testing/compose/locust-seq-load.yaml down
+docker-compose -f courseProjectCode/performance-testing/compose/locust-all-load.yaml down
+```
+
+# Stress Test Commands
+### Change into the project root directory
+```bash
+cd mkdocs-AJ_Connor_Kemoy
+```
 
 ## Spike Test Commands
 
