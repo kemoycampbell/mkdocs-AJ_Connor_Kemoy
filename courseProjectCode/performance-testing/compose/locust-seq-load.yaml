@@ -1,0 +1,24 @@
+services:
+  mkdocs:
+    build: .
+    container_name: mkdocs
+    ports:
+      - "8000:8000"
+  
+  locust:
+    image: locustio/locust:latest
+    container_name: locust_load
+    working_dir: /mnt/locust
+    ports:
+      - "8089:8089"
+    volumes:
+      - ../tests/:/mnt/locust/
+
+    command: >
+      -f load_test.py
+      --host=http://mkdocs:8000
+      -u 1
+      -t 7m
+      --headless
+      --html seq_load_test_report.html
+      MkDocsUserSeq
